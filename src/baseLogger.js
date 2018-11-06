@@ -2,30 +2,56 @@
 
 const request = require('simple-server-request');
 
-const {LOG_STORAGE_REST_API_URL, DEBUG_MODE} = process.env;
+const {LOG_STORAGE_REST_API_URL, DEBUG_MODE, SERVICE_NAME} = process.env;
 
-function storeInDb (logData) {
+function storeInDb (logMessage, logData, logType='error') {
     if (LOG_STORAGE_REST_API_URL) {
-        request.post(LOG_STORAGE_REST_API_URL, logData, function (err) {
+        const messageContent = {logMessage, logType};
+
+        if (logData) {
+            messageContent.logData = logData;
+        }
+
+        const newLogMessage = {
+            messageType: logType + '-log',
+            source: SERVICE_NAME || 'missing',
+            messageContent: messageContent
+        };
+
+        request.post(LOG_STORAGE_REST_API_URL, newLogMessage, function (err) {
             err && console.error('Got error while trying to store log - ' + err);
         });
     }
 }
 
-function error (logText) {
-    console.error(logText);
-    storeInDb(logText);
-}
-
-function warning (logText) {
-    if (DEBUG_MODE && DEBUG_MODE.toUpperCase() !== 'OFF') {
-        console.warn(logText);
+function getDataString (data) {
+    if (data) {
+        if (typeof data === 'object') {
+            return ' - ' + JSON.stringify(data);
+        }
+        else {
+            return ' - ' + data.toString();
+        }
+    }
+    else {
+        return '';
     }
 }
 
-function log (logText) {
+function error (logText, data) {
+    console.error(logText + getDataString(data));
+    storeInDb(logText, data, 'error');
+}
+
+function warning (logText, data) {
     if (DEBUG_MODE && DEBUG_MODE.toUpperCase() !== 'OFF') {
-        console.log(logText);
+        console.warn(logText + getDataString(data));
+    }
+}
+
+function log (logText, data) {
+    if (DEBUG_MODE && DEBUG_MODE.toUpperCase() !== 'OFF') {
+        console.log(logText + getDataString(data));
     }
 }
 

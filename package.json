@@ -4,6 +4,6 @@
   "main": "./src/baseLogger.js",
   "author": "shmilky",
   "dependencies": {
-    "simple-server-request": "1.0.0"
+    "simple-server-request": "1.0.1"
   }
 }
