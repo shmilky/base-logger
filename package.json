@@ -1,6 +1,6 @@
 {
   "name": "nodejs-base-logger",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "./src/baseLogger.js",
   "author": "shmilky",
   "dependencies": {

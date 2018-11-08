@@ -71,8 +71,24 @@ function logErrorCbFactory (cb) {
     }
 }
 
+// Factory for query cb that will log all the error locally and return only the error code
+function sqlQueryCbFactory (cb) {
+    return function (sqlQueryErr, result) {
+        if (sqlQueryErr) {
+            console.error('Handling query resulted with error:\n' + sqlQueryErr);
+            console.trace();
+            if (sqlQueryErr.code) {
+                sqlQueryErr = sqlQueryErr.code;
+            }
+        }
+
+        cb(sqlQueryErr, result);
+    }
+}
+
 module.exports.error = error;
 module.exports.warning = warning;
 module.exports.log = log;
 module.exports.logErrorCb = logErrorCb;
 module.exports.logErrorCbFactory = logErrorCbFactory;
+module.exports.sqlQueryCbFactory = sqlQueryCbFactory;
