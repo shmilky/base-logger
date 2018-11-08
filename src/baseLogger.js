@@ -40,6 +40,7 @@ function getDataString (data) {
 
 function error (logText, data) {
     console.error(logText + getDataString(data));
+    console.trace();
     storeInDb(logText, data, 'error');
 }
 
